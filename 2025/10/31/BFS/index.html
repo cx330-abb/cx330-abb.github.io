@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.25.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="BFS算法 BFS算法，本质上其实是把问题抽象成树&#x2F;图，然后对这颗树&#x2F;图进行暴力穷举 。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BFS算法及其扩展">
+<meta property="og:url" content="http://example.com/2025/10/31/BFS/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="BFS算法 BFS算法，本质上其实是把问题抽象成树&#x2F;图，然后对这颗树&#x2F;图进行暴力穷举 。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-31T05:48:00.000Z">
+<meta property="article:modified_time" content="2025-10-31T12:27:52.331Z">
+<meta property="article:author" content="Dhmeer">
+<meta property="article:tag" content="基础算法">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2025/10/31/BFS/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2025/10/31/BFS/","path":"2025/10/31/BFS/","title":"BFS算法及其扩展"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BFS算法及其扩展 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Dhmeer"
+      src="/images/8.gif">
+  <p class="site-author-name" itemprop="name">Dhmeer</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cx330-abb" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cx330-abb" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:dcs41889@gmail.com" title="E-Mail → mailto:dcs41889@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/10/31/BFS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/8.gif">
+      <meta itemprop="name" content="Dhmeer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="BFS算法及其扩展 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BFS算法及其扩展
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-10-31 13:48:00 / 修改时间：20:27:52" itemprop="dateCreated datePublished" datetime="2025-10-31T13:48:00+08:00">2025-10-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>BFS算法</p>
+<p>BFS算法，本质上其实是把问题抽象成树&#x2F;图，然后对这颗树&#x2F;图进行暴力穷举 。</p>
+<span id="more"></span>
+
+<p>BFS 算法的本质就是遍历一幅图<br>BFS 的特点是逐层扩散，从源头点到目标点扩散了几层，最短路就是多少<br>BFS 可以使用的特征是 <strong>任意两个节点之间的相互距离相同</strong>（无向图）<br>BFS 开始时，可以是 <strong>单个源头</strong>、也可以是 <strong>多个源头</strong><br>BFS 频繁使用队列，形式可以是 <strong>单点弹出</strong> 或者 <strong>整层弹出</strong><br>BFS 进行时，<strong>进入队列的节点需要标记状态</strong>，防止 <strong>同一个节点重复进出队列</strong><br>BFS 进行时，可能会包含 <strong>剪枝策略</strong> 的设计<br>BFS是一个理解难度很低的算法，<strong>难点在于 节点如何找到路、路的展开 和 剪枝设计</strong></p>
+<hr>
+<p>  这为单源BFS 算法的代码框架，用这个框架可以解决从一个源头开始的BFS问题</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从 s 开始 BFS 遍历图的所有节点，且记录遍历的步数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bfs</span>(<span class="params">graph, s, target</span>):</span><br><span class="line">    visited = [<span class="literal">False</span>] * <span class="built_in">len</span>(graph)</span><br><span class="line">    q = deque([s])</span><br><span class="line">    visited[s] = <span class="literal">True</span></span><br><span class="line">    <span class="comment"># 记录从 s 开始走到当前节点的步数</span></span><br><span class="line">    step = <span class="number">0</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> q:</span><br><span class="line">        sz = <span class="built_in">len</span>(q)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(sz):</span><br><span class="line">            cur = q.popleft()</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;visit <span class="subst">&#123;cur&#125;</span> at step <span class="subst">&#123;step&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="comment"># 判断是否到达终点</span></span><br><span class="line">            <span class="keyword">if</span> cur == target:</span><br><span class="line">                <span class="keyword">return</span> step</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 将邻居节点加入队列，向四周扩散搜索</span></span><br><span class="line">            <span class="keyword">for</span> to <span class="keyword">in</span> neighborsOf(cur):</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> visited[to]:</span><br><span class="line">                    q.append(to)</span><br><span class="line">                    visited[to] = <span class="literal">True</span></span><br><span class="line">        step += <span class="number">1</span></span><br><span class="line">    <span class="comment"># 如果走到这里，说明在图中没有找到目标节点</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p> 多源BFS算法的代码框架，可以解决源头为一些特定点的算法，初始时我们需要将这些点加入到队列中，然后用这些点不断的扩散和遍历</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> deque</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">maxDistance</span>(<span class="params">self, grid: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        m = <span class="built_in">len</span>(grid)</span><br><span class="line">        n = <span class="built_in">len</span>(grid[<span class="number">0</span>])</span><br><span class="line">        q = deque()</span><br><span class="line">        dirs = [[<span class="number">1</span>, <span class="number">0</span>], [-<span class="number">1</span>, <span class="number">0</span>], [<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, -<span class="number">1</span>]]</span><br><span class="line">        visit = [[<span class="literal">False</span>] * n <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(m)]</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">                <span class="keyword">if</span> grid[i][j] == <span class="number">1</span>:</span><br><span class="line">                    q.append((i, j))</span><br><span class="line">                    visit[i][j] = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(q) == m * n:</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">        level = -<span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> q:</span><br><span class="line">            sz = <span class="built_in">len</span>(q)</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(sz):</span><br><span class="line">                x, y = q.popleft()</span><br><span class="line">                <span class="keyword">for</span> d <span class="keyword">in</span> dirs:</span><br><span class="line">                    <span class="keyword">if</span> <span class="number">0</span> &lt;= x + d[<span class="number">0</span>] &lt; m <span class="keyword">and</span> <span class="number">0</span> &lt;= y + d[<span class="number">1</span>] &lt; n <span class="keyword">and</span> <span class="keyword">not</span> visit[x + d[<span class="number">0</span>]][y + d[<span class="number">1</span>]]:</span><br><span class="line">                        q.append((x + d[<span class="number">0</span>], y + d[<span class="number">1</span>]))</span><br><span class="line">                        visit[x + d[<span class="number">0</span>]][y + d[<span class="number">1</span>]] = <span class="literal">True</span></span><br><span class="line">            level += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> level</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>利用该框架可以解决leetcode上的<br>1162 地图分析<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/as-far-from-land-as-possible/">https://leetcode.cn/problems/as-far-from-land-as-possible/</a><br>542 01矩阵<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/01-matrix/description/">https://leetcode.cn/problems/01-matrix/description/</a><br>都是可以直接套框架秒杀的题目</p>
+<hr>
+<p>BFS + 剪枝的优化</p>
+<p>  上述的题目都是在矩阵中进行，那么题目要求如果不在矩阵中，而是在一个实际的问题总呢？</p>
+<p>leetcode691 贴纸拼词<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/stickers-to-spell-word/">https://leetcode.cn/problems/stickers-to-spell-word/</a> </p>
+<p>详情见题目描述<br>题目就是要求我们用贴纸来拼接出target字符串，贴纸的数量无限使用，求使用最少的贴纸数量</p>
+<p>那么我们很容易就想出用DFS算法，一条路走到黑，然后用备忘录来记录走过的路，防止走重复的路，的确这个方法是可行的，但是本文介绍另一种方法，BFS算法来解决本题。</p>
+<p>BFS算法本质上是带有贪心算法的，因为一层一层的遍历下去，第一次遇到目标值的时候，就是最少的次数。题目也要求我们使用最少的贴纸数量，我们就可以把target当作树中的根节点，贴纸当作树枝，一层一层的遍历下去，知道树节点当前的值为”” ，当第一次遇见 “”时，就找到了最少的贴纸数量</p>
+<p>本题的剪枝逻辑该怎么处理呢<br>假设target &#x3D; aaaaaabbbbcccckkk<br>那么当第一次遇到””时，所有的字符都已经消失了<br>从结果来思考使用的贴纸消去a、b、c、k的贴纸一定时最少的<br>所以我们就可以先消去a、b、c、k的顺序来使用贴纸<br>因为 “” -&gt; target a、b、c、k的贴纸一定时最少的<br>那么target -&gt; “” 我们也可以按照这个顺序来处理<br>这就是剪枝优化</p>
+<p>不使用这个剪枝的话，我们每一层都会分出贴纸数量的分支，每一次的代价都是贴纸数量，而使用这个剪枝的话，每一层的数量都只和当前的字符有关，而当前字符的数量对于的贴纸数量一定是小于总贴纸数量的，而且这条路径是一定存在与所有的路径当中，因此我们使用这个剪枝逻辑，优化我们的代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">minStickers</span>(<span class="params">self, stickers: <span class="type">List</span>[<span class="built_in">str</span>], target: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        graph = [[] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">26</span>)]</span><br><span class="line">        visited = <span class="built_in">set</span>()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> sticker <span class="keyword">in</span> stickers:</span><br><span class="line">            sorted_sticker = <span class="variable language_">self</span>.sort_string(sticker)</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(sorted_sticker)):</span><br><span class="line">                <span class="keyword">if</span> i == <span class="number">0</span> <span class="keyword">or</span> sorted_sticker[i] != sorted_sticker[i-<span class="number">1</span>]:</span><br><span class="line">                    graph[<span class="built_in">ord</span>(sorted_sticker[i]) - <span class="built_in">ord</span>(<span class="string">&#x27;a&#x27;</span>)].append(sorted_sticker)</span><br><span class="line"></span><br><span class="line">        sorted_target = <span class="variable language_">self</span>.sort_string(target)</span><br><span class="line">        visited.add(sorted_target)</span><br><span class="line">        </span><br><span class="line">        queue = collections.deque()</span><br><span class="line">        queue.append(sorted_target)</span><br><span class="line">        level = <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> queue:</span><br><span class="line">            size = <span class="built_in">len</span>(queue)</span><br><span class="line">            <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(size):</span><br><span class="line">                cur = queue.popleft()</span><br><span class="line">                first_char_idx = <span class="built_in">ord</span>(cur[<span class="number">0</span>]) - <span class="built_in">ord</span>(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">                <span class="keyword">for</span> s <span class="keyword">in</span> graph[first_char_idx]:</span><br><span class="line">                    next_str = <span class="variable language_">self</span>.get_next(cur, s)</span><br><span class="line">                    <span class="keyword">if</span> next_str == <span class="string">&quot;&quot;</span>:</span><br><span class="line">                        <span class="keyword">return</span> level</span><br><span class="line">                    <span class="keyword">elif</span> next_str <span class="keyword">not</span> <span class="keyword">in</span> visited:</span><br><span class="line">                        visited.add(next_str)</span><br><span class="line">                        queue.append(next_str)</span><br><span class="line">            level += <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">sort_string</span>(<span class="params">self, s: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">sorted</span>(s))</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_next</span>(<span class="params">self, t: <span class="built_in">str</span>, s: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        builder = []</span><br><span class="line">        i, j = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> i &lt; <span class="built_in">len</span>(t):</span><br><span class="line">            <span class="keyword">if</span> j == <span class="built_in">len</span>(s):</span><br><span class="line">                builder.append(t[i])</span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">if</span> t[i] &lt; s[j]:</span><br><span class="line">                    builder.append(t[i])</span><br><span class="line">                    i += <span class="number">1</span></span><br><span class="line">                <span class="keyword">elif</span> t[i] &gt; s[j]:</span><br><span class="line">                    j += <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    i += <span class="number">1</span></span><br><span class="line">                    j += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(builder)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>0 - 1BFS</strong></p>
+<p>01bfs，适用于 图中所有边的权重只有0和1两种值，求源点到目标点的最短距离时间复杂度为 O(节点数量+边的数量)，为什么不能用传统bfs？<br>1，distance[i]表示从源点到i点的最短距离，初始时所有点的distance设置为无穷大2，源点进入双端队列，distance[源点]&#x3D;0<br>3，双端队列 头部弹出 x，<br>  A，如果x是目标点，返回distance[x]表示源点到目标点的最短距离<br>  B，考察从x出发的每一条边，假设某边去y点，边权为w<br>       1）如果 <strong>distance[y] &gt; distance[x] + w</strong>，处理该边；否则忽略该边<br>       2）处理时，更新distance[y] &#x3D; distance[x] + w<br>              <strong>如果w&#x3D;&#x3D;0，y从头部</strong>进<strong>入双端队列</strong><br>              <strong>如果w&#x3D;&#x3D;1，y从尾部进入双端队列</strong><br>        3）考察完x出发的所有边之后，重复步骤3<br>  4，双端队列为空停止</p>
+<p>代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findSafeWalk</span>(<span class="params">self, grid: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]], health: <span class="built_in">int</span></span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line"></span><br><span class="line">        dirs = [[<span class="number">0</span>,<span class="number">1</span>],[<span class="number">0</span>,-<span class="number">1</span>],[<span class="number">1</span>,<span class="number">0</span>],[-<span class="number">1</span>,<span class="number">0</span>]]</span><br><span class="line">        n = <span class="built_in">len</span>(grid)</span><br><span class="line">        m = <span class="built_in">len</span>(grid[<span class="number">0</span>])</span><br><span class="line">        distance = [[inf] * m <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n)]</span><br><span class="line">        q = deque()</span><br><span class="line">        q.append((<span class="number">0</span>,<span class="number">0</span>))</span><br><span class="line">        distance[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">        <span class="keyword">if</span> grid[<span class="number">0</span>][<span class="number">0</span>] == <span class="number">1</span>:</span><br><span class="line">            health -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> q:</span><br><span class="line">            x,y = q.popleft()</span><br><span class="line">            <span class="keyword">if</span> x == n - <span class="number">1</span> <span class="keyword">and</span> y == m - <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">return</span>  health &gt; distance[x][y] </span><br><span class="line">            <span class="keyword">for</span> dx,dy <span class="keyword">in</span> dirs:</span><br><span class="line">                <span class="keyword">if</span> <span class="number">0</span> &lt;= x + dx &lt; n <span class="keyword">and</span> <span class="number">0</span> &lt;= dy + y &lt; m <span class="keyword">and</span> distance[x][y] + grid[x + dx][y + dy] &lt; distance[x + dx][y + dy]:</span><br><span class="line">                    distance[x + dx][y + dy] =  distance[x][y] + grid[x + dx][y + dy]</span><br><span class="line">                    <span class="keyword">if</span> grid[x + dx][y + dy] == <span class="number">0</span>:</span><br><span class="line">                        q.appendleft((x + dx,y + dy))</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        q.append((x + dx,y + dy))</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+
+<p>3286 穿越网格图的安全路径<br><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/find-a-safe-walk-through-a-grid/">https://leetcode.cn/problems/find-a-safe-walk-through-a-grid/</a><br>2290 到达角落需要一处障碍物的最小数目<br><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/minimum-obstacle-removal-to-reach-corner/description/">https://leetcode.cn/problems/minimum-obstacle-removal-to-reach-corner/description/</a> </p>
+<p>这俩题的权重值都为0和1，同时需要找到某一点，当然这俩题也都可以用Dj算法求出最短路径来解决。本题的代码稍微改改也可以解决以下题目<br>LCP 56 信物传送<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/6UEx57/">https://leetcode.cn/problems/6UEx57/</a><br>1368 网格图至少有一条有效路径的最小值<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/">https://leetcode.cn/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/</a> </p>
+<hr>
+<p>BFS + DFS的使用</p>
+<p>126 单词接龙<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/word-ladder-ii/description/">https://leetcode.cn/problems/word-ladder-ii/description/</a><br>题目说找出最小的转化路径<br>怎么转化呢 无法就是遍历 a ~  z 26种字符，与原字符不同且在单词表中</p>
+<p>我们先可以用BFS求出beginword 到 endword的转化，当第一次遇到endword时，就是<strong>最短路径的长度</strong>，但是我们求出了长度，难道还要傻傻的用DFS算法去求吗？不用，因为比它长的，我们不需要，而且当我们第一次遇到endword的时候，我们不是已经将这些<strong>路径走了一遍</strong>吗，所以我们需要一个结构来记录这些路径，并用这些路径来进行DFS的遍历，求出的答案就时最短转化序列<br>在DFS遍历的过程和BFS过程中，用一个visit数组来记录是否访问过，防止走回头路<br>DFS的过程我们可以反向遍历，从endword到beginword，因为我们已经求出了beginword到endword的路径，就可以减去从上到下没有必要出现的路径</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findLadders</span>(<span class="params">self,beginWord: <span class="built_in">str</span>, endWord: <span class="built_in">str</span>, wordList: <span class="type">List</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">str</span>]]:</span><br><span class="line">        word_dict = <span class="built_in">set</span>(wordList)</span><br><span class="line">        <span class="keyword">if</span> endWord <span class="keyword">not</span> <span class="keyword">in</span> word_dict:</span><br><span class="line">            <span class="keyword">return</span> []</span><br><span class="line"></span><br><span class="line">        cur_level = <span class="built_in">set</span>([beginWord])</span><br><span class="line">        next_level = <span class="built_in">set</span>()</span><br><span class="line">        graph = defaultdict(<span class="built_in">list</span>)</span><br><span class="line">        found = <span class="literal">False</span></span><br><span class="line">        <span class="keyword">while</span> cur_level <span class="keyword">and</span> <span class="keyword">not</span> found:</span><br><span class="line">            word_dict -= cur_level</span><br><span class="line">            <span class="keyword">for</span> word <span class="keyword">in</span> cur_level:</span><br><span class="line">                word_chars = <span class="built_in">list</span>(word)</span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(word_chars)):</span><br><span class="line">                    original_char = word_chars[i]</span><br><span class="line">                    <span class="keyword">for</span> c <span class="keyword">in</span> <span class="string">&#x27;abcdefghijklmnopqrstuvwxyz&#x27;</span>:</span><br><span class="line">                        <span class="keyword">if</span> c == original_char:</span><br><span class="line">                            <span class="keyword">continue</span></span><br><span class="line">                        word_chars[i] = c</span><br><span class="line">                        new_word = <span class="string">&#x27;&#x27;</span>.join(word_chars)</span><br><span class="line">                        <span class="keyword">if</span> new_word <span class="keyword">in</span> word_dict:</span><br><span class="line">                            <span class="keyword">if</span> new_word == endWord:</span><br><span class="line">                                found = <span class="literal">True</span></span><br><span class="line">                            graph[new_word].append(word)</span><br><span class="line">                            next_level.add(new_word)</span><br><span class="line">                    word_chars[i] = original_char</span><br><span class="line">            cur_level, next_level = next_level, <span class="built_in">set</span>()</span><br><span class="line">        result = []</span><br><span class="line">        <span class="keyword">if</span> found:</span><br><span class="line">            path = []</span><br><span class="line">            <span class="variable language_">self</span>.dfs(endWord, beginWord, graph, path, result)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">dfs</span>(<span class="params">self,current: <span class="built_in">str</span>, target: <span class="built_in">str</span>, graph: <span class="built_in">dict</span>, path: <span class="type">List</span>[<span class="built_in">str</span>], result: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">str</span>]]</span>):</span><br><span class="line">        path.append(current)</span><br><span class="line">        <span class="keyword">if</span> current == target:</span><br><span class="line">            result.append(path[::-<span class="number">1</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">for</span> prev <span class="keyword">in</span> graph.get(current, []):</span><br><span class="line">                <span class="variable language_">self</span>.dfs(prev, target, graph, path, result)</span><br><span class="line">        path.pop()</span><br><span class="line">            </span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>双向BFS<br>用处1</p>
+<p>BFS的剪枝策略，分两侧展开分支，<strong>哪侧数量少就从哪侧展开</strong><br>127 单词接龙<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/word-ladder/">https://leetcode.cn/problems/word-ladder/</a> </p>
+<p>和上一题一样题目要求的时beginword 到endword的最短转换长度，而不是路径。<br>也很简单，你也可以直接把上题BFS代码抽出来直接提交，修改一下逻辑就能通过了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ladderLength</span>(<span class="params">self, beginWord: <span class="built_in">str</span>, endWord: <span class="built_in">str</span>, wordList: <span class="type">List</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        wordSet = <span class="built_in">set</span>(wordList)</span><br><span class="line">        <span class="keyword">if</span> endWord <span class="keyword">not</span> <span class="keyword">in</span> wordSet:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        q = collections.deque([beginWord])</span><br><span class="line">        visited = <span class="built_in">set</span>([beginWord])</span><br><span class="line">        step = <span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> q:</span><br><span class="line">            sz = <span class="built_in">len</span>(q)</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(sz):</span><br><span class="line">                curWord = q.popleft()</span><br><span class="line">                chars = <span class="built_in">list</span>(curWord)</span><br><span class="line">                <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(curWord)):</span><br><span class="line">                    originChar = chars[j]</span><br><span class="line">                    <span class="keyword">for</span> c <span class="keyword">in</span> <span class="string">&#x27;abcdefghijklmnopqrstuvwxyz&#x27;</span>:</span><br><span class="line">                        <span class="keyword">if</span> c == originChar:</span><br><span class="line">                            <span class="keyword">continue</span></span><br><span class="line">                        chars[j] = c</span><br><span class="line">                        newWord = <span class="string">&#x27;&#x27;</span>.join(chars)</span><br><span class="line">                        <span class="keyword">if</span> newWord <span class="keyword">in</span> wordSet <span class="keyword">and</span> newWord <span class="keyword">not</span> <span class="keyword">in</span> visited:</span><br><span class="line">                            <span class="keyword">if</span> newWord == endWord:</span><br><span class="line">                                <span class="keyword">return</span> step + <span class="number">1</span></span><br><span class="line">                            q.append(newWord)</span><br><span class="line">                            visited.add(newWord)</span><br><span class="line">                    chars[j] = originChar</span><br><span class="line">            step += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>但是我们可以用双向BFS来优化<br>上述代码中 我们是beginword -&gt; x -&gt; z -&gt; …. -&gt; endword<br>而双向BFS呢就是, beginword -&gt; x -&gt; z &lt;- … -&lt; endword<br>事半功倍，时间优化上比普通BFS相当nice<br>那么具体的逻辑呢就是，哪一层的数量的少，就使用哪一层<br>比如一开始  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">len</span>(beginword)  &lt; <span class="built_in">len</span>(endword)</span><br></pre></td></tr></table></figure>
+
+<p>我们就使用beginword 求出nextlevel后，比较nextlevel和endword的长度，也是谁少用谁，就这样一次遍历下次，直到数量小的层数与数量大的层数重合，返回长度就是最小长度，同样为了避免走回头路，我们需要将在nextlevel中添加，然后在单词本中删除，思路类似上面的贴纸问题，都是从最优来推出剪枝的逻辑</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ladderLength</span>(<span class="params">self, beginWord: <span class="built_in">str</span>, endWord: <span class="built_in">str</span>, wordList: <span class="type">List</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        word_dict = <span class="built_in">set</span>(wordList)</span><br><span class="line">        <span class="keyword">if</span> endWord <span class="keyword">not</span> <span class="keyword">in</span> word_dict:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        begin_set = <span class="built_in">set</span>([beginWord])</span><br><span class="line">        end_set = <span class="built_in">set</span>([endWord])</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 从起点开始的层级</span></span><br><span class="line">        level = <span class="number">2</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> begin_set:</span><br><span class="line">            <span class="comment"># 下一层扩展的单词集合</span></span><br><span class="line">            next_level = <span class="built_in">set</span>()</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 从较小的一侧开始扩展</span></span><br><span class="line">            <span class="keyword">for</span> word <span class="keyword">in</span> begin_set:</span><br><span class="line">                word_chars = <span class="built_in">list</span>(word)</span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(word_chars)):</span><br><span class="line">                    original_char = word_chars[i]</span><br><span class="line">                    <span class="keyword">for</span> c <span class="keyword">in</span> <span class="string">&#x27;abcdefghijklmnopqrstuvwxyz&#x27;</span>:</span><br><span class="line">                        <span class="keyword">if</span> c == original_char:</span><br><span class="line">                            <span class="keyword">continue</span></span><br><span class="line">                        word_chars[i] = c</span><br><span class="line">                        new_word = <span class="string">&#x27;&#x27;</span>.join(word_chars)</span><br><span class="line">                        </span><br><span class="line">                        <span class="comment"># 如果在另一侧找到了相同的单词，说明路径连通</span></span><br><span class="line">                        <span class="keyword">if</span> new_word <span class="keyword">in</span> end_set:</span><br><span class="line">                            <span class="keyword">return</span> level</span><br><span class="line">                        </span><br><span class="line">                        <span class="comment"># 如果在字典中且未被访问过</span></span><br><span class="line">                        <span class="keyword">if</span> new_word <span class="keyword">in</span> word_dict:</span><br><span class="line">                            word_dict.remove(new_word)  <span class="comment"># 标记为已访问 删除拒绝走回头路</span></span><br><span class="line">                            next_level.add(new_word)</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment"># 恢复原始字符</span></span><br><span class="line">                    word_chars[i] = original_char</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 选择较小的一侧进行下一轮扩展</span></span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">len</span>(next_level) &lt;= <span class="built_in">len</span>(end_set):</span><br><span class="line">                begin_set = next_level</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                begin_set = end_set</span><br><span class="line">                end_set = next_level</span><br><span class="line">            </span><br><span class="line">            level += <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>双向广搜常见用途2：重要！本体！用于解决特征很明显的一类问题<br>特征：<strong>全量样本不允许递归完全展开</strong>，但是半量样本可以完全展开<br>过程：把数据分成两部分，每部分 <strong>各自展开 计算结果</strong>，然后<strong>设计两部分结果的 整合逻辑</strong></p>
+<p>这里的内容就需要对双指针技巧和递归技巧有一定了解</p>
+<p>对于递归，我们可以在叶子节点收集答案，但是我们在这里是用半量样本进行展开，并整合，那么如果我们要收集答案的话，就要收集俩部分叶子节点的答案。<br>因此如何进行递归并整合，就是解决问题的关键所在。<br>洛谷 p4799<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4799#submit">https://www.luogu.com.cn/problem/P4799#submit</a> </p>
+<p>题目说如何在有限的金钱内得到所有的方案，最简单的方法就是递归了，收集每个叶子节点的答案，但是题目的数量为40，如果进行展开的话那么时间复杂度将达到2^40级别，远远大于10^8，因此暴力穷举是不行的，但是分开进行穷举呢，2^20 ~10 ^ 6，俩部分就是约为 2 * 10 ^ 6，在利用双指针进行合并,那么就是3 * 10 ^ 6，是小于 10^8的，因此分开进行递归穷军，然后通过双指针整合，就能得到正确的答案。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStreamWriter;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> java.io.StreamTokenizer;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">MAXN</span> <span class="operator">=</span> <span class="number">40</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">MAXM</span> <span class="operator">=</span> <span class="number">1</span> &lt;&lt; <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span>[] arr = <span class="keyword">new</span> <span class="title class_">long</span>[MAXN];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span>[] lsum = <span class="keyword">new</span> <span class="title class_">long</span>[MAXM];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span>[] rsum = <span class="keyword">new</span> <span class="title class_">long</span>[MAXM];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> n;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span> w;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">		<span class="type">BufferedReader</span> <span class="variable">br</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(System.in));</span><br><span class="line">		<span class="type">StreamTokenizer</span> <span class="variable">in</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StreamTokenizer</span>(br);</span><br><span class="line">		<span class="type">PrintWriter</span> <span class="variable">out</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(<span class="keyword">new</span> <span class="title class_">OutputStreamWriter</span>(System.out));</span><br><span class="line">		<span class="keyword">while</span> (in.nextToken() != StreamTokenizer.TT_EOF) &#123;</span><br><span class="line">			n = (<span class="type">int</span>) in.nval;</span><br><span class="line">			in.nextToken();</span><br><span class="line">			w = (<span class="type">long</span>) in.nval;</span><br><span class="line">			<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">				in.nextToken();</span><br><span class="line">				arr[i] = (<span class="type">long</span>) in.nval;</span><br><span class="line">			&#125;</span><br><span class="line">			out.println(compute());</span><br><span class="line">		&#125;</span><br><span class="line">		out.flush();</span><br><span class="line">		out.close();</span><br><span class="line">		br.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">long</span> <span class="title function_">compute</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="type">int</span> <span class="variable">lsize</span> <span class="operator">=</span> f(<span class="number">0</span>, n &gt;&gt; <span class="number">1</span>, <span class="number">0</span>, w, lsum, <span class="number">0</span>);</span><br><span class="line">		<span class="type">int</span> <span class="variable">rsize</span> <span class="operator">=</span> f(n &gt;&gt; <span class="number">1</span>, n, <span class="number">0</span>, w, rsum, <span class="number">0</span>);</span><br><span class="line">		Arrays.sort(lsum, <span class="number">0</span>, lsize);</span><br><span class="line">		Arrays.sort(rsum, <span class="number">0</span>, rsize);</span><br><span class="line">		<span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> lsize - <span class="number">1</span>, j = <span class="number">0</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">			<span class="keyword">while</span> (j &lt; rsize &amp;&amp; lsum[i] + rsum[j] &lt;= w) &#123;</span><br><span class="line">				j++;</span><br><span class="line">			&#125;</span><br><span class="line">			ans += j;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> ans;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// arr[i..e-1]范围上展开，到达e就停止</span></span><br><span class="line">	<span class="comment">// 返回值 : ans数组填到了什么位置！</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">f</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> e, <span class="type">long</span> s, <span class="type">long</span> w, <span class="type">long</span>[] ans, <span class="type">int</span> j)</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (s &gt; w) &#123;</span><br><span class="line">			<span class="keyword">return</span> j;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// s &lt;= w</span></span><br><span class="line">		<span class="keyword">if</span> (i == e) &#123;</span><br><span class="line">			ans[j++] = s;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// 不要arr[i]位置的数</span></span><br><span class="line">			j = f(i + <span class="number">1</span>, e, s, w, ans, j);</span><br><span class="line">			<span class="comment">// 要arr[i]位置的数</span></span><br><span class="line">			j = f(i + <span class="number">1</span>, e, s + arr[i], w, ans, j);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> j;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样的题目还有leetcode 1755<strong>最接近目标值的子序列和</strong><br><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/closest-subsequence-sum/description/">https://leetcode.cn/problems/closest-subsequence-sum/description/</a> </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/" rel="tag"># 基础算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/10/28/%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84%E7%9A%84%E4%BD%BF%E7%94%A8/" rel="prev" title="差分数组">
+                  <i class="fa fa-angle-left"></i> 差分数组
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Dhmeer</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
